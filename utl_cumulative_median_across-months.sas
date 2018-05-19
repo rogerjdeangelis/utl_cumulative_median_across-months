@@ -1,6 +1,11 @@
 Cumulative median across months
 
   SAS and WPS gave the same results after working around DOSUBL and  median(of mat[*]);
+  
+  see end of post for SQL solution by
+  Momo1644 profile
+  https://stackoverflow.com/users/8880079/momo1644
+
 
 github
 https://github.com/rogerjdeangelis/utl_cumulative_median_across-months
@@ -141,6 +146,42 @@ data wrk.want;
    end;
 run;quit;
 ');
+
+
+see end of post for SQL solution by
+
+Momo1644 profile
+https://stackoverflow.com/users/8880079/momo1644
+
+data have;
+ infile datalines dlm=',' dsd;
+ informat Month monyy7.;
+ format Month monyy7.;
+ input Account_ID  Month    patients;
+ datalines;
+1,Jan2017,5
+2,Jan2017,3
+3,Feb2017, 7
+4,Feb2017,6
+5,Feb2017, 2
+6,Mar2017 , 4
+7,Apr2017,1
+8,Apr2017,10
+9,Apr2017, 9
+10, Apr2017 ,3
+;
+run;
+
+proc sql;
+create table want as
+select t1.Month , median(t2.patients) as Cumm_Median
+from have as t1 left join have as t2
+on t2.Month le t1.month
+group by t1.month
+order by t1.Month
+;
+quit;
+
 
 
 
